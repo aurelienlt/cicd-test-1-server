@@ -14,6 +14,7 @@ jobs:
           registry: core.harbor.cicd-test-1.laigames.net
           username: ${{ secrets.HARBOR_USER }}
           password: ${{ secrets.HARBOR_SECRET }}
+      - run: echo core.harbor.cicd-test-1.laigames.net/cicd/server:${{ env.GITHUB_REF_NAME }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
