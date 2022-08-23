@@ -3,17 +3,18 @@ import re
 import subprocess
 import os.path
 import argparse
+from typing import Tuple, List
 
 VERSION_PATTERN = re.compile(r'^v([0-9]+)\.([0-9]+)\.([0-9]+)$')
 PR_VERSION_PATTERN = re.compile(r'^v([0-9]+)\.([0-9]+)\.([0-9]+)-PR-([0-9]+)\.([0-9]+)$')
 VERSION_FORMAT = 'v%d.%d.%d'
 PR_VERSION_FORMAT = 'v%d.%d.%d-PR-%d.%d'
 
-NoVersion = tuple[()]
-Version = tuple[int, int, int]
-PRVersion = tuple[int, int, int, int, int]
+NoVersion = Tuple[()]
+Version = Tuple[int, int, int]
+PRVersion = Tuple[int, int, int, int, int]
 
-def list_history_tags(reference: str | None=None) -> list[str]:
+def list_history_tags(reference: str | None=None) -> List[str]:
     args = ['git', 'log', '--format=%D']
     if reference: args.append(reference)
     out = subprocess.run(args, text=True, capture_output=True, check=True)
@@ -28,7 +29,7 @@ def list_history_tags(reference: str | None=None) -> list[str]:
             tags.append(tag)
     return tags
 
-def list_all_tags() -> list[str]:
+def list_all_tags() -> List[str]:
     args = ['git', 'tag', '-l']
     out = subprocess.run(args, text=True, capture_output=True, check=True)
     tags = []
@@ -38,7 +39,7 @@ def list_all_tags() -> list[str]:
         tags.append(line)
     return tags
 
-def max_tag_version(tags: list[str]) -> Version | NoVersion:
+def max_tag_version(tags: List[str]) -> Version | NoVersion:
     maxtag = ()
     for tag in tags:
         m = VERSION_PATTERN.match(tag)
@@ -49,7 +50,7 @@ def max_tag_version(tags: list[str]) -> Version | NoVersion:
         print('latest tag version is "%s"' % (VERSION_FORMAT % maxtag), file=sys.stderr)
     return maxtag
 
-def max_tag_pr_version(pr: int, tags: list[str]) -> PRVersion | NoVersion:
+def max_tag_pr_version(pr: int, tags: List[str]) -> PRVersion | NoVersion:
     maxtag = ()
     for tag in tags:
         m = PR_VERSION_PATTERN.match(tag)
@@ -61,7 +62,7 @@ def max_tag_pr_version(pr: int, tags: list[str]) -> PRVersion | NoVersion:
         print('latest pr tag version is "%s"' % (PR_VERSION_FORMAT % maxtag), file=sys.stderr)
     return maxtag
 
-def max_file_version(files: list[str]=()) -> Version | NoVersion:
+def max_file_version(files: List[str]=()) -> Version | NoVersion:
     maxfile = ()
     for f in files:
         if not os.path.exists(f):
@@ -84,7 +85,7 @@ def max_file_version(files: list[str]=()) -> Version | NoVersion:
         if maxfile < version: maxfile = version
     return maxfile
 
-def next_version(reference: str | None=None, files: list[str]=()) -> Version:
+def next_version(reference: str | None=None, files: List[str]=()) -> Version:
     maxtag = max_tag_version(list_history_tags(reference=reference))
     maxfile = max_file_version(files)
     if maxfile and maxfile > maxtag:
@@ -98,7 +99,7 @@ def next_version(reference: str | None=None, files: list[str]=()) -> Version:
         version = (*version[:-1], version[-1]+1)
     return version
 
-def next_pr_version(pr: int, reference: str | None=None, files: list[str]=()) -> PRVersion:
+def next_pr_version(pr: int, reference: str | None=None, files: List[str]=()) -> PRVersion:
     maxtagpr = max_tag_pr_version(pr, list_all_tags())
     nextver = next_version(reference=reference, files=files)
     nextsub = maxtagpr[4] + 1 if maxtagpr else 0
