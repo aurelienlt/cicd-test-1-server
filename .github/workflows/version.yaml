@@ -11,11 +11,11 @@ jobs:
       - name: Login to Harbor
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.HARBOR_HOST }}
+          registry: core.harbor.cicd-test-1.laigames.net
           username: ${{ secrets.HARBOR_USER }}
           password: ${{ secrets.HARBOR_SECRET }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{ secrets.HARBOR_HOST }}/cicd/server:${{ env.GITHUB_REF_NAME }}
+          tags: core.harbor.cicd-test-1.laigames.net/cicd/server:${{ env.GITHUB_REF_NAME }}
