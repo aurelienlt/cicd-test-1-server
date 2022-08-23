@@ -14,7 +14,6 @@ jobs:
           registry: core.harbor.cicd-test-1.laigames.net
           username: ${{ secrets.HARBOR_USER }}
           password: ${{ secrets.HARBOR_SECRET }}
-      - run: echo core.harbor.cicd-test-1.laigames.net/cicd/server:${{ github.ref_name }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -24,7 +23,7 @@ jobs:
         uses: hiberbee/github-action-helm@latest
         with:
           helm: >
-            helm registry login
+            registry login
             -u "${{ secrets.HARBOR_USER }}"
             -p "${{ secrets.HARBOR_SECRET }}"
             core.harbor.cicd-test-1.laigames.net
