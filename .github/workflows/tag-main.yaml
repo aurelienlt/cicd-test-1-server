@@ -11,7 +11,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: next tag
-        run: python3 .github/scripts/version-tag.py version
+        run: python3 .github/scripts/version-tag.py version --file VERSION
         id: next-tag
       - name: push tag
         env:
