@@ -20,3 +20,24 @@ jobs:
         with:
           push: true
           tags: core.harbor.cicd-test-1.laigames.net/cicd/server:${{ github.ref_name }}
+      - name: helm login
+        uses: hiberbee/github-action-helm@latest
+        with:
+          helm: >
+            helm registry login
+            -u "${{ secrets.HARBOR_USER }}"
+            -p "${{ secrets.HARBOR_SECRET }}"
+            core.harbor.cicd-test-1.laigames.net
+      - name: helm package
+        uses: hiberbee/github-action-helm@latest
+        with:
+          helm: >
+            upgrade package chart/
+            --version ${{ github.ref_name }}
+            --app-version ${{ github.ref_name }}
+      - name: helm push
+        uses: hiberbee/github-action-helm@latest
+        with:
+          helm: >
+            helm push server-${{ github.ref_name }}.tgz
+            oci://core.harbor.cicd-test-1.laigames.net/cicd/server-${{ github.ref_name }}.tgz
