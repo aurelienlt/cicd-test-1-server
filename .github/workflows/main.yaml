@@ -8,22 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
         with:
           fetch-depth: 0
+          token: ${{ secrets.PUSH_TOKEN }}
       - name: next tag
         run: python3 .github/scripts/version-tag.py version --file VERSION
         id: next-tag
       - name: push tag
         env:
           TAG: ${{ steps.next-tag.outputs.TAG }}
-          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
         run: |
-          # git config user.name "${GITHUB_ACTOR}"
-          # git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git tag "${TAG}"
-          # git remote set-url origin "https://user:${{ secrets.PUSH_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           git push origin "${TAG}"
           
