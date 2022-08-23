@@ -31,7 +31,7 @@ jobs:
         uses: hiberbee/github-action-helm@latest
         with:
           helm: >
-            upgrade package chart/
+            package chart/
             --version ${{ github.ref_name }}
             --app-version ${{ github.ref_name }}
       - name: helm push
